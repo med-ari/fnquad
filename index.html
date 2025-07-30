@@ -1,0 +1,1200 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dominando las Funciones Cuadráticas: Un Viaje de Fundamentos a Aplicaciones</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        svg: {
+          fontCache: 'global'
+        },
+        chtml: {
+          displayAlign: 'left'
+        }
+      };
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
+    
+    <style>
+        :root {
+            --primary-color: #4f46e5; --primary-dark: #4338ca; --primary-light: #eef2ff;
+            --secondary-color: #64748b; --success-color: #10b981; --success-light: #ecfdf5;
+            --danger-color: #ef4444; --danger-light: #fef2f2; --warning-color: #f59e0b;
+            --light-bg: #f1f5f9; --border-color: #cbd5e1; --text-color: #1e293b;
+            --white: #ffffff; --progress-color-start: #4f46e5; --progress-color-end: #10b981;
+        }
+        @keyframes moveGradient { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        body {
+            font-family: 'Inter', sans-serif; display: flex; justify-content: center;
+            align-items: flex-start; min-height: 100vh;
+            background: linear-gradient(-45deg, #6d28d9, #4f46e5, #d946ef, #10b981);
+            background-size: 400% 400%; animation: moveGradient 20s ease infinite;
+            margin: 0; padding: 2em 1em;
+        }
+        .main-wrapper { width: 100%; max-width: 900px; position: relative; }
+        .card { background: var(--white); padding: 2.5em; border-radius: 16px; box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15); animation: fadeIn 0.5s ease-out; }
+        .hidden { display: none; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideDownFade { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        #category-selection-screen h2 { font-size: 2em; color: var(--primary-color); text-align: center; margin-top: 0; margin-bottom: 0.5em; }
+        #category-selection-screen .subtitle { text-align: center; color: var(--secondary-color); margin-bottom: 2em; font-size: 1.1em; max-width: 600px; margin-left: auto; margin-right: auto; line-height: 1.6; }
+        #category-list { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5em; margin-bottom: 2.5em; }
+        .category-item { background-color: var(--white); border: 2px solid var(--border-color); border-radius: 12px; padding: 1.5em; cursor: pointer; transition: all 0.3s ease; position: relative; overflow: hidden; }
+        .category-item:hover:not(.completed) { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(79,70,229,0.1); border-color: var(--primary-color); }
+        .category-item h3 { margin: 0 0 0.5em 0; color: var(--primary-dark); font-size: 1.25em; }
+        .category-item p { margin: 0; color: var(--secondary-color); font-size: 0.95em; line-height: 1.5; }
+        .category-item.completed { border-color: var(--success-color); background-color: var(--success-light); cursor: default; }
+        .category-item.completed:hover { transform: none; box-shadow: none; }
+        .category-item.completed::before { content: '✔'; font-weight: bold; position: absolute; top: 1em; right: 1.2em; color: var(--success-color); font-size: 1.5em; }
+        .category-item .progress-info { margin-top: 1em; font-weight: bold; color: var(--success-color); }
+        #overall-progress-container { margin-top: 2em; text-align: center; border-top: 1px solid var(--border-color); padding-top: 2em;}
+        #overall-progress-container h3 { margin: 0 0 0.5em 0; color: var(--text-color); }
+        #overall-score { font-size: 1.2em; color: var(--secondary-color); }
+        #show-final-results-btn { padding: 12px 30px; font-size: 1em; font-weight: bold; color: var(--white); background-color: var(--success-color); border: none; border-radius: 10px; cursor: pointer; transition: all 0.3s; margin-top: 1em; }
+        #show-final-results-btn:hover { background-color: #059669; }
+
+        /* --- New Summary Card Styles --- */
+        #summary-container h2 { font-size: 1.8em; margin-top: 0; margin-bottom: 0.2em; color: var(--primary-color); }
+        #summary-container .subtitle { color: var(--secondary-color); margin-top: 0; margin-bottom: 2em; }
+        .summary-section { margin-bottom: 2.5em; }
+        .summary-section h3 { font-size: 1.2em; font-weight: 700; color: var(--text-color); margin-bottom: 1em; padding-bottom: 0.5em; border-bottom: 2px solid var(--primary-light); display: flex; align-items: center; gap: 0.75em; }
+        .summary-key-concepts { line-height: 1.7; color: #374151; }
+        .summary-key-concepts p, .summary-key-concepts ul, .summary-key-concepts ol { margin-bottom: 1em; }
+        .summary-key-concepts ul, .summary-key-concepts ol { padding-left: 20px; }
+        .summary-key-concepts strong { color: var(--primary-dark); }
+        .summary-key-concepts mjx-container[display="true"] { background-color: rgba(79, 70, 229, 0.05); padding: 1em; border-radius: 8px; margin: 1em 0; }
+        .summary-tips-list { list-style: none; padding: 0; }
+        .summary-tips-list li { display: flex; align-items: flex-start; gap: 1em; margin-bottom: 1em; background-color: var(--primary-light); padding: 1em; border-radius: 8px; }
+        .summary-tips-list li::before { content: '💡'; font-size: 1.2em; line-height: 1.5; }
+        #summary-continue-btn { padding: 12px 30px; font-size: 1em; font-weight: bold; color: var(--white); background-color: var(--primary-color); border: none; border-radius: 10px; cursor: pointer; transition: all 0.2s; display: block; width: 100%; }
+        #summary-continue-btn:hover { background-color: var(--primary-dark); transform: scale(1.02); }
+
+        /* --- Main Quiz & Final Screen Styles --- */
+        #quiz-header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5em; }
+        #problem-header { color: var(--text-color); font-weight: 600; font-size: 1.1em; }
+        #score-counter { color: var(--success-color); font-weight: 600; font-size: 1em; background-color: var(--success-light); padding: 5px 10px; border-radius: 8px; }
+        #progress-container { width: 100%; background-color: #e2e8f0; border-radius: 10px; margin-bottom: 1.5em; height: 12px; overflow: hidden; }
+        #progress-bar { width: 0%; height: 100%; background: linear-gradient(90deg, var(--progress-color-start), var(--progress-color-end)); border-radius: 10px; transition: width 0.6s cubic-bezier(0.4, 0.0, 0.2, 1); }
+        #question-container { font-size: 1.15em; line-height: 1.7; margin: 1em 0; color: var(--text-color); text-align: justify; }
+        #question-container table { width: 100%; border-collapse: collapse; margin: 1em 0; }
+        #question-container th, #question-container td { border: 1px solid var(--border-color); padding: 12px; text-align: center; }
+        #question-container th { background-color: var(--light-bg); font-weight: 600; }
+        #graph-container, .option-graph-canvas-container { width: 100%; max-width: 450px; margin: 1.5em auto; border-radius: 8px; overflow: hidden; }
+        #graph-container svg, .option-graph-canvas-container svg {max-width: 100%; height: auto; display: block; margin: 0 auto; background: white; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color);}
+        #options-container { margin-top: 1.5em; display: flex; flex-direction: column; gap: 0.75em; }
+        .option-button { display: flex; align-items: center; gap: 1em; width: 100%; padding: 14px 18px; font-size: 1.05em; text-align: left; background-color: var(--white); border: 2px solid var(--border-color); border-radius: 12px; cursor: pointer; transition: all 0.2s ease-in-out; }
+        .option-button:hover:not(.disabled) { border-color: var(--primary-color); transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .option-button .label { font-weight: bold; color: var(--primary-color); }
+        .option-button .value { flex-grow: 1; }
+        .option-button.correct { border-color: var(--success-color); background-color: var(--success-light); }
+        .option-button.correct .label { color: var(--success-color); }
+        .option-button.incorrect { border-color: var(--danger-color); background-color: var(--danger-light); }
+        .option-button.incorrect .label { color: var(--danger-color); }
+        .option-button.disabled { cursor: not-allowed; }
+        .options-grid-with-graphs { display: grid; grid-template-columns: 1fr 1fr; gap: 1em; }
+        .option-block-graph { padding: 1em; border: 2px solid var(--border-color); border-radius: 12px; cursor: pointer; transition: all 0.2s ease-in-out; background-color: var(--white); }
+        .option-block-graph:hover:not(.disabled) { border-color: var(--primary-color); transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .option-block-graph.correct { border-color: var(--success-color)!important; background-color: var(--success-light); }
+        .option-block-graph.incorrect { border-color: var(--danger-color)!important; background-color: var(--danger-light); }
+        .option-block-graph .label { font-size: 1.2em; font-weight: bold; margin-bottom: 0.5em; color: var(--primary-color); }
+        #feedback-container { margin-top: 1.5em; padding: 1.2em; border-radius: 12px; display: none; animation: slideDownFade 0.4s ease-out; line-height: 1.7; text-align: justify; }
+        #feedback-container.correct { background-color: var(--success-light); border-left: 5px solid var(--success-color); }
+        #feedback-container.incorrect { background-color: var(--danger-light); border-left: 5px solid var(--danger-color); }
+        #feedback-title { display: flex; align-items: center; font-size: 1.2em; font-weight: 700; margin-bottom: 0.5em; }
+        #feedback-title svg { width: 24px; height: 24px; margin-right: 8px; }
+        #feedback-container.correct #feedback-title { color: var(--success-color); }
+        #feedback-container.incorrect #feedback-title { color: var(--danger-color); }
+        #navigation-container { display: flex; justify-content: flex-end; margin-top: 2em; }
+        #next-button, .nav-btn { padding: 12px 30px; font-size: 1em; font-weight: bold; color: var(--white); background-color: var(--primary-color); border: none; border-radius: 10px; cursor: pointer; transition: all 0.3s; }
+        #next-button { visibility: hidden; opacity: 0; }
+        #next-button.visible { visibility: visible; opacity: 1; }
+        #next-button:hover, .nav-btn:hover { background-color: var(--primary-dark); }
+        #final-screen { text-align: center; animation: fadeIn 0.5s ease-out; }
+        #final-screen h2 { font-size: 2.2em; color: var(--primary-color); font-weight: 700; }
+        #final-screen p { font-size: 1.2em; }
+        .highlight { color: var(--primary-color); font-weight: 700; }
+        @media (max-width: 680px) { .options-grid-with-graphs { grid-template-columns: 1fr; } #category-list { grid-template-columns: 1fr; }}
+    </style>
+</head>
+<body>
+    <div class="main-wrapper">
+        <div id="category-selection-screen" class="card">
+            <h2>Dominando las Funciones Cuadráticas: Un Viaje de Fundamentos a Aplicaciones</h2>
+            <p class="subtitle">Selecciona un tema para comenzar. Cada sección se enfoca en una habilidad clave. ¡Completa todas las secciones para demostrar tu maestría!</p>
+            <ul id="category-list"></ul>
+            <div id="overall-progress-container" class="hidden">
+                <h3>Progreso General</h3>
+                <p id="overall-score"></p>
+                <button id="show-final-results-btn" class="nav-btn hidden">Ver Resumen Final</button>
+            </div>
+        </div>
+
+        <div id="quiz-wrapper" class="hidden">
+            <div id="summary-container" class="card hidden">
+                <h2 id="summary-title"></h2>
+                <p class="subtitle">Prepárate para la siguiente sección.</p>
+
+                <div class="summary-section">
+                    <h3>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-book-open" style="color: var(--primary-dark);"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+                      Conceptos Clave y Fórmulas
+                    </h3>
+                    <div id="summary-key-concepts" class="summary-key-concepts"></div>
+                </div>
+                
+                <div class="summary-section">
+                    <h3>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-zap" style="color: var(--warning-color);"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                      Consejos para esta Sección
+                    </h3>
+                    <ul id="summary-tips-list" class="summary-tips-list"></ul>
+                </div>
+                
+                <button id="summary-continue-btn">Comenzar Problemas</button>
+            </div>
+
+            <div id="quiz-container" class="hidden card">
+                <div id="progress-container"><div id="progress-bar"></div></div>
+                <div id="quiz-header-bar">
+                    <div id="problem-header"></div>
+                    <div id="score-counter"></div>
+                </div>
+                <div id="question-container"></div>
+                <div id="graph-container"></div>
+                <div id="options-container"></div>
+                <div id="feedback-container"></div>
+                <div id="navigation-container"><button id="next-button">Siguiente →</button></div>
+            </div>
+
+            <div id="final-screen" class="hidden card">
+                <h2 id="final-title"></h2>
+                <p id="final-message"></p>
+                <p id="final-score" style="font-size: 2.5em; font-weight: bold; margin: 0.5em 0;"></p>
+                <p id="final-percentage" style="font-size: 1.5em;"></p>
+                <button id="back-to-menu-btn" class="nav-btn">Volver al Menú</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    function renderMath() {
+      if (window.MathJax && window.MathJax.typesetPromise) {
+        setTimeout(() => window.MathJax.typesetPromise(), 0);
+      }
+    }
+    
+    document.addEventListener('DOMContentLoaded', () => {
+        const icons = {
+            check: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"></path></svg>`,
+            x: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`
+        };
+        const summaries = {
+  "ai-cat-1753897437013-0": {
+    "title": "Fundamentos y Propiedades Generales",
+    "key_concepts_html": "<p>Esta sección cubre los conceptos básicos de las funciones cuadráticas, incluyendo su forma general, la influencia de los coeficientes en la gráfica y la identificación de parábolas.</p><strong>Fórmulas Clave:</strong><ul><li>Forma general: \\(f(x) = ax^2 + bx + c\\)</li></ul><p>Recuerda que el coeficiente <strong>\\(a\\)</strong> determina la concavidad (si \\(a > 0\\) la parábola abre hacia arriba, si \\(a < 0\\) abre hacia abajo) y la 'apertura' de la parábola. El coeficiente <strong>\\(c\\)</strong> indica la intersección con el eje Y (\\((0, c)\\)).</p>",
+    "tips": [
+      "Presta atención a los detalles en los enunciados y diagramas.",
+      "Recuerda revisar las fórmulas y conceptos clave relacionados antes de empezar.",
+      "Usa la explicación para entender tus errores y reforzar tu aprendizaje.",
+      "¡Mucha suerte en esta sección!"
+    ]
+  },
+  "ai-cat-1753897437014-1": {
+    "title": "Intersecciones con los Ejes y Discriminante",
+    "key_concepts_html": "<p>Aquí explorarás cómo las funciones cuadráticas interactúan con los ejes cartesianos, especialmente con el eje X (las raíces o ceros de la función).</p><strong>Fórmulas Clave:</strong><ul><li><strong>Fórmula General o Cuadrática:</strong> Para encontrar las raíces de \\(ax^2 + bx + c = 0\\): \\[x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}\\]</li><li><strong>Discriminante (\\(\\Delta\\)):</strong> \\(\\Delta = b^2 - 4ac\\)</li></ul><p>El discriminante es crucial para determinar la naturaleza de las raíces:</p><ul><li>Si <strong>\\(\\Delta > 0\\)</strong>: Dos raíces reales y distintas (la parábola corta el eje X en dos puntos).</li><li>Si <strong>\\(\\Delta = 0\\)</strong>: Una raíz real (o doble), la parábola es tangente al eje X.</li><li>Si <strong>\\(\\Delta < 0\\)</strong>: No hay raíces reales (la parábola no corta el eje X).</li></ul>",
+    "tips": [
+      "Presta atención a los detalles en los enunciados y diagramas.",
+      "Recuerda revisar las fórmulas y conceptos clave relacionados antes de empezar.",
+      "Usa la explicación para entender tus errores y reforzar tu aprendizaje.",
+      "¡Mucha suerte en esta sección!"
+    ]
+  },
+  "ai-cat-1753897437014-2": {
+    "title": "Vértice, Rango y Resolución de Ecuaciones",
+    "key_concepts_html": "<p>Esta sección se centra en el punto más importante de la parábola: el vértice, que representa el valor máximo o mínimo de la función. También abordarás el rango, los intervalos de crecimiento/decrecimiento y la resolución de ecuaciones cuadráticas.</p><strong>Fórmulas Clave:</strong><ul><li><strong>Coordenada X del Vértice:</strong> \\(x_v = -\\frac{b}{2a}\\)</li><li><strong>Coordenada Y del Vértice:</strong> \\(y_v = f(x_v)\\)</li></ul><p>El <strong>rango</strong> de una función cuadrática es \\( [y_v, \\infty) \\) si \\(a > 0\\) o \\( (-\\infty, y_v] \\) si \\(a < 0\\). El eje de simetría es la recta vertical <strong>\\(x = x_v\\)</strong>. Los intervalos de crecimiento y decrecimiento cambian en el vértice.</p>",
+    "tips": [
+      "Presta atención a los detalles en los enunciados y diagramas.",
+      "Recuerda revisar las fórmulas y conceptos clave relacionados antes de empezar.",
+      "Usa la explicación para entender tus errores y reforzar tu aprendizaje.",
+      "¡Mucha suerte en esta sección!"
+    ]
+  },
+  "ai-cat-1753897437014-3": {
+    "title": "Aplicaciones y Modelado",
+    "key_concepts_html": "<p>Aquí aplicarás tus conocimientos sobre funciones cuadráticas para resolver problemas del mundo real. Muchas situaciones que involucran maximizar o minimizar una cantidad (como ganancias, áreas, alturas) pueden ser modeladas con funciones cuadráticas, donde el vértice juega un papel fundamental.</p><p>Presta atención a la <strong>identificación de las variables</strong> (independiente y dependiente), la <strong>formulación de la función cuadrática</strong> que modela el problema y la <strong>interpretación de los resultados</strong> en el contexto dado. Recuerda que el vértice te dará el valor óptimo (máximo o mínimo) y el valor de la variable que lo produce.</p>",
+    "tips": [
+      "Presta atención a los detalles en los enunciados y diagramas.",
+      "Recuerda revisar las fórmulas y conceptos clave relacionados antes de empezar.",
+      "Usa la explicación para entender tus errores y reforzar tu aprendizaje.",
+      "¡Mucha suerte en esta sección!"
+    ]
+  }
+};
+        const allProblemsData = [
+  {
+    "correct": 3,
+    "explanation": "<ol><li>Del gráfico, identificamos las raíces de la parábola, que son los puntos donde cruza el eje x: \\(x_1 = -1\\) y \\(x_2 = 3\\).</li><li>Una función cuadrática se puede expresar en su forma factorizada como \\(f(x) = a(x - x_1)(x - x_2)\\). Sustituyendo las raíces obtenemos \\(f(x) = a(x - (-1))(x - 3) = a(x+1)(x-3)\\).</li><li>También del gráfico, identificamos el intercepto con el eje y, que es el punto donde la parábola cruza el eje y: \\((0, -3)\\).</li><li>Sustituimos el punto \\((0, -3)\\) en la ecuación de la función para encontrar el valor de \\(a\\): \\(-3 = a(0+1)(0-3) \\implies -3 = a(1)(-3) \\implies -3 = -3a \\implies a = 1\\).</li><li>Sustituimos el valor de \\(a=1\\) en la ecuación factorizada y la expandimos: \\(f(x) = 1(x+1)(x-3) = x^2 - 3x + x - 3 = x^2 - 2x - 3\\).</li><li>Comparando esta función con las opciones dadas, la opción D coincide con nuestra función derivada.</li></ol>",
+    "options": [
+      {
+        "text": "\\(f(x) = x^2 + 2x - 3\\)"
+      },
+      {
+        "text": "\\(f(x) = x^2 - 2x + 3\\)"
+      },
+      {
+        "text": "\\(f(x) = x^2 + 2x + 3\\)"
+      },
+      {
+        "text": "\\(f(x) = x^2 - 2x - 3\\)"
+      }
+    ],
+    "sourceFileName": "clase_15_matematicas_1_page_1.png",
+    "text": "Si la función graficada es una cuadrática, esta corresponde a:",
+    "diagram": {
+      "type": "svg",
+      "code": "<svg viewBox=\"0 0 240 240\" xmlns=\"http://www.w3.org/2000/svg\">\n  <defs>\n    <marker id=\"arrowhead_black\" markerWidth=\"10\" markerHeight=\"7\" refX=\"0\" refY=\"3.5\" orient=\"auto\"><polygon points=\"0 0, 10 3.5, 0 7\" fill=\"black\" /></marker>\n  </defs>\n  <line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"220\" stroke=\"black\" stroke-width=\"2\" marker-end=\"url(#arrowhead_black)\" />\n  <line x1=\"20\" y1=\"100\" x2=\"220\" y2=\"100\" stroke=\"black\" stroke-width=\"2\" marker-end=\"url(#arrowhead_black)\" />\n  <foreignObject x=\"82.72337341308594\" y=\"99.4710464477539\" width=\"20\" height=\"20\">\n    <div xmlns=\"http://www.w3.org/1999/xhtml\" style=\"font-size: 12px; font-family: Arial, sans-serif; color: black; height: 100%; display: flex; align-items: center; justify-content: center;\">-1</div>\n  </foreignObject>\n  <foreignObject x=\"186.74766540527344\" y=\"100.44674682617188\" width=\"20\" height=\"20\">\n    <div xmlns=\"http://www.w3.org/1999/xhtml\" style=\"font-size: 12px; font-family: Arial, sans-serif; color: black; height: 100%; display: flex; align-items: center; justify-content: center;\">3</div>\n  </foreignObject>\n  <foreignObject x=\"101.90848541259766\" y=\"133.57394409179688\" width=\"20\" height=\"20\">\n    <div xmlns=\"http://www.w3.org/1999/xhtml\" style=\"font-size: 12px; font-family: Arial, sans-serif; color: black; height: 100%; display: flex; align-items: center; justify-content: center;\">-3</div>\n  </foreignObject>\n  <path d=\"M 88.02692413330078,73.80612182617188 Q 143.96693420410156,221.46173095703125 202.50880432128906,74.45658874511719\" stroke=\"black\" stroke-width=\"2\" fill=\"none\" />\n</svg>"
+    },
+    "originalQuestionNumber": "1",
+    "internalId": "q-1753894189566-0.7549412452439543",
+    "id": "q-ai-cat-1753897437013-0-0"
+  },
+  {
+    "correct": 2,
+    "explanation": "<ol><li>Las funciones dadas son de la forma \\(ax^2\\).</li><li>Si el parámetro \\(a\\) es positivo (\\(a > 0\\)), la parábola se abre hacia arriba. Si \\(a\\) es negativo (\\(a < 0\\)), la parábola se abre hacia abajo.</li><li>Para que el valor de \\(a\\) sea mayor, debe ser positivo. Por lo tanto, debemos buscar entre las parábolas que se abren hacia arriba (\\(h(x)\\) y \\(j(x)\\)).</li><li>Cuando \\(a > 0\\), cuanto mayor sea el valor absoluto de \\(a\\), más \"cerrada\" o \"estrecha\" será la parábola.</li><li>Observando la gráfica, \\(h(x)\\) es una parábola que se abre hacia arriba y es más estrecha que \\(j(x)\\). Esto indica que el valor de su parámetro \\(a\\) es mayor que el de \\(j(x)\\).</li><li>Las funciones \\(f(x)\\) y \\(g(x)\\) se abren hacia abajo, lo que significa que sus valores de \\(a\\) son negativos, y por lo tanto, menores que cualquier valor positivo de \\(a\\).</li><li>Por lo tanto, \\(h(x)\\) es la función con el mayor valor de \\(a\\).</li></ol>",
+    "options": [
+      {
+        "text": "\\(f(x)\\)"
+      },
+      {
+        "text": "\\(g(x)\\)"
+      },
+      {
+        "text": "\\(h(x)\\)"
+      },
+      {
+        "text": "\\(j(x)\\)"
+      }
+    ],
+    "sourceFileName": "quiz_page_1.png",
+    "text": "En la figura adjunta, se grafican cuatro funciones de la forma \\(ax^2\\), donde el valor de \\(a\\) es distinto para cada una de las funciones. ¿Cuál de ellas tendría un valor mayor del parámetro \\(a\\)?",
+    "diagram": {
+      "type": "svg",
+      "code": "<svg viewBox=\"0 0 200 200\" xmlns=\"http://www.w3.org/2000/svg\">\n  <defs>\n    <marker id=\"arrowhead_black\" markerWidth=\"10\" markerHeight=\"7\" refX=\"0\" refY=\"3.5\" orient=\"auto\"><polygon points=\"0 0, 10 3.5, 0 7\" fill=\"black\" /></marker>\n  </defs>\n  <line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"black\" stroke-width=\"1\" marker-end=\"url(#arrowhead_black)\" />\n  <line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"black\" stroke-width=\"1\" marker-end=\"url(#arrowhead_black)\" />\n  <path d=\"M70,180 Q100,20 130,180\" stroke=\"black\" stroke-width=\"1.5\" fill=\"none\" />\n  <foreignObject x=\"70\" y=\"15\" width=\"30\" height=\"20\">\n    <div xmlns=\"http://www.w3.org/1999/xhtml\" style=\"font-size: 10px; font-family: Arial, sans-serif; color: black; height: 100%; display: flex; align-items: center; justify-content: center;\">h(x)</div>\n  </foreignObject>\n  <path d=\"M40,180 Q100,50 160,180\" stroke=\"#556f07\" stroke-width=\"1.5\" fill=\"none\" />\n  <foreignObject x=\"147.88778686523438\" y=\"44.85048294067383\" width=\"30\" height=\"20\">\n    <div xmlns=\"http://www.w3.org/1999/xhtml\" style=\"font-size: 10px; font-family: Arial, sans-serif; color: black; height: 100%; display: flex; align-items: center; justify-content: center;\">j(x)</div>\n  </foreignObject>\n  <path d=\"M70,20 Q100,180 130,20\" stroke=\"#a51d2d\" stroke-width=\"1.5\" fill=\"none\" />\n  <foreignObject x=\"138.9438934326172\" y=\"140.3925323486328\" width=\"30\" height=\"20\">\n    <div xmlns=\"http://www.w3.org/1999/xhtml\" style=\"font-size: 10px; font-family: Arial, sans-serif; color: black; height: 100%; display: flex; align-items: center; justify-content: center;\">f(x)</div>\n  </foreignObject>\n  <path d=\"M 39.45793914794922,34.906494140625 Q 99.45793914794922,164.906494140625 159.45793914794922,34.906494140625\" stroke=\"#054096\" stroke-width=\"1.5\" fill=\"none\" />\n  <foreignObject x=\"66.28963470458984\" y=\"160.44854736328125\" width=\"30\" height=\"20\">\n    <div xmlns=\"http://www.w3.org/1999/xhtml\" style=\"font-size: 10px; font-family: Arial, sans-serif; color: black; height: 100%; display: flex; align-items: center; justify-content: center;\">g(x)</div>\n  </foreignObject>\n  <foreignObject x=\"105\" y=\"175\" width=\"20\" height=\"15\">\n    <div xmlns=\"http://www.w3.org/1999/xhtml\" style=\"font-size: 10px; font-family: Arial, sans-serif; color: black; height: 100%; display: flex; align-items: center; justify-content: center;\">x</div>\n  </foreignObject>\n  <foreignObject x=\"90\" y=\"10\" width=\"20\" height=\"15\">\n    <div xmlns=\"http://www.w3.org/1999/xhtml\" style=\"font-size: 10px; font-family: Arial, sans-serif; color: black; height: 100%; display: flex; align-items: center; justify-content: center;\">y</div>\n  </foreignObject>\n</svg>"
+    },
+    "originalQuestionNumber": "27",
+    "internalId": "q-1753894149964-0.8145436502969153",
+    "id": "q-ai-cat-1753897437013-0-1"
+  },
+  {
+    "correct": 1,
+    "explanation": "<ol><li>Identificar las relaciones dadas: Sea \\( L \\) el largo y \\( W \\) el ancho del rectángulo. Se nos dice que el largo excede al ancho en una unidad, lo que se traduce en la ecuación \\( L = W + 1 \\).</li><li>Asignar la variable para el largo: Se especifica que el largo es \\( a \\), es decir, \\( L = a \\).</li><li>Encontrar el ancho en términos de \\( a \\): Sustituyendo \\( L = a \\) en la primera ecuación, obtenemos \\( a = W + 1 \\). Despejando \\( W \\), tenemos \\( W = a - 1 \\).</li><li>Formular la función del área: El área de un rectángulo es \\( A = L \\times W \\). Sustituyendo las expresiones para \\( L \\) y \\( W \\) en términos de \\( a \\), obtenemos \\( A(a) = a(a - 1) \\).</li><li>Simplificar la función del área: Multiplicando, \\( A(a) = a^2 - a \\).</li></ol>",
+    "options": [
+      {
+        "text": "\\( A(a) = a^2 + a \\)"
+      },
+      {
+        "text": "\\( A(a) = a^2 - a \\)"
+      },
+      {
+        "text": "\\( A(a) = a^2 + 1 \\)"
+      },
+      {
+        "text": "\\( A(a) = a^2 - 1 \\)"
+      }
+    ],
+    "sourceFileName": "quiz_page_1.png",
+    "text": "El largo de un rectángulo excede a su ancho en una unidad. Si el largo es \\( a \\), la función que indica el área del rectángulo es:",
+    "originalQuestionNumber": "15",
+    "internalId": "q-1753894149625-0.8036407872194107",
+    "id": "q-ai-cat-1753897437013-0-2"
+  },
+  {
+    "correct": 2,
+    "explanation": "<ol><li>Para una función cuadrática de la forma \\(f(x) = ax^2 + bx + c\\), el coeficiente \\(a\\) determina la concavidad de la parábola. Si \\(a > 0\\), la parábola se abre hacia arriba. Todas las opciones muestran parábolas que abren hacia arriba, por lo que todas cumplen esta condición.</li><li>El término independiente \\(c\\) representa el intercepto de la parábola con el eje \\(y\\) (es decir, el valor de \\(f(x)\\) cuando \\(x = 0\\)). Dado que \\(c < 0\\), la parábola debe cortar el eje \\(y\\) en un punto por debajo del eje \\(x\\). Las opciones B, C y D cumplen con esta condición, mientras que la opción A muestra un intercepto \\(y\\) por encima o en el eje \\(x\\).</li><li>La coordenada \\(x\\) del vértice de la parábola se calcula como \\(x_v = -b/(2a)\\). Dado que \\(b < 0\\), el término \\(-b\\) es positivo. Como \\(a > 0\\), el término \\(2a\\) también es positivo. Por lo tanto, \\(x_v = (\\text{positivo})/(\\text{positivo}) > 0\\). Esto significa que el vértice de la parábola debe estar situado a la derecha del eje \\(y\\).</li><li>Considerando todas las condiciones: la parábola debe abrirse hacia arriba, cortar el eje \\(y\\) por debajo del eje \\(x\\), y tener su vértice a la derecha del eje \\(y\\). La única gráfica que satisface estas tres condiciones es la opción C.</li></ol>",
+    "options": [
+      {
+        "text": "",
+        "diagram": {
+          "type": "svg",
+          "code": "<svg viewBox=\"0 0 400 200\" xmlns=\"http://www.w3.org/2000/svg\">\n  <defs>\n    <marker id=\"arrowhead_black\" markerWidth=\"10\" markerHeight=\"7\" refX=\"0\" refY=\"3.5\" orient=\"auto\"><polygon points=\"0 0, 10 3.5, 0 7\" fill=\"black\" /></marker>\n  </defs>\n  <line x1=\"200\" y1=\"20\" x2=\"200\" y2=\"180\" stroke=\"black\" stroke-width=\"1\" marker-end=\"url(#arrowhead_black)\" />\n  <foreignObject x=\"190\" y=\"5\" width=\"20\" height=\"15\">\n    <div xmlns=\"http://www.w3.org/1999/xhtml\" style=\"font-size: 10px; font-family: Arial, sans-serif; color: black; height: 100%; display: flex; align-items: center; justify-content: center;\">Y</div>\n  </foreignObject>\n  <line x1=\"20\" y1=\"100\" x2=\"380\" y2=\"100\" stroke=\"black\" stroke-width=\"1\" marker-end=\"url(#arrowhead_black)\" />\n  <foreignObject x=\"370\" y=\"105\" width=\"20\" height=\"15\">\n    <div xmlns=\"http://www.w3.org/1999/xhtml\" style=\"font-size: 10px; font-family: Arial, sans-serif; color: black; height: 100%; display: flex; align-items: center; justify-content: center;\">X</div>\n  </foreignObject>\n  <path d=\"M 129.24668884277344,64.57357025146484 Q 175.7194366455078,182.51451873779297 229.24668884277344,64.57357025146484\" stroke=\"gray\" stroke-width=\"2\" fill=\"none\" />\n</svg>"
+        }
+      },
+      {
+        "text": "",
+        "diagram": {
+          "type": "svg",
+          "code": "<svg viewBox=\"0 0 400 200\" xmlns=\"http://www.w3.org/2000/svg\">\n  <defs>\n    <marker id=\"arrowhead_black\" markerWidth=\"10\" markerHeight=\"7\" refX=\"0\" refY=\"3.5\" orient=\"auto\"><polygon points=\"0 0, 10 3.5, 0 7\" fill=\"black\" /></marker>\n  </defs>\n  <line x1=\"200\" y1=\"20\" x2=\"200\" y2=\"180\" stroke=\"black\" stroke-width=\"1\" marker-end=\"url(#arrowhead_black)\" />\n  <foreignObject x=\"190\" y=\"5\" width=\"20\" height=\"15\">\n    <div xmlns=\"http://www.w3.org/1999/xhtml\" style=\"font-size: 10px; font-family: Arial, sans-serif; color: black; height: 100%; display: flex; align-items: center; justify-content: center;\">Y</div>\n  </foreignObject>\n  <line x1=\"20\" y1=\"100\" x2=\"380\" y2=\"100\" stroke=\"black\" stroke-width=\"1\" marker-end=\"url(#arrowhead_black)\" />\n  <foreignObject x=\"370\" y=\"105\" width=\"20\" height=\"15\">\n    <div xmlns=\"http://www.w3.org/1999/xhtml\" style=\"font-size: 10px; font-family: Arial, sans-serif; color: black; height: 100%; display: flex; align-items: center; justify-content: center;\">X</div>\n  </foreignObject>\n  <path d=\"M 152.41317749023438,70.44180297851562 Q 200.33383178710938,159.3480224609375 252.41317749023438,70.44180297851562\" stroke=\"gray\" stroke-width=\"2\" fill=\"none\" />\n</svg>"
+        }
+      },
+      {
+        "text": "",
+        "diagram": {
+          "type": "svg",
+          "code": "<svg viewBox=\"0 0 400 200\" xmlns=\"http://www.w3.org/2000/svg\">\n  <defs>\n    <marker id=\"arrowhead_black\" markerWidth=\"10\" markerHeight=\"7\" refX=\"0\" refY=\"3.5\" orient=\"auto\"><polygon points=\"0 0, 10 3.5, 0 7\" fill=\"black\" /></marker>\n  </defs>\n  <line x1=\"200\" y1=\"20\" x2=\"200\" y2=\"180\" stroke=\"black\" stroke-width=\"1\" marker-end=\"url(#arrowhead_black)\" />\n  <foreignObject x=\"190\" y=\"5\" width=\"20\" height=\"15\">\n    <div xmlns=\"http://www.w3.org/1999/xhtml\" style=\"font-size: 10px; font-family: Arial, sans-serif; color: black; height: 100%; display: flex; align-items: center; justify-content: center;\">Y</div>\n  </foreignObject>\n  <line x1=\"20\" y1=\"100\" x2=\"380\" y2=\"100\" stroke=\"black\" stroke-width=\"1\" marker-end=\"url(#arrowhead_black)\" />\n  <foreignObject x=\"370\" y=\"105\" width=\"20\" height=\"15\">\n    <div xmlns=\"http://www.w3.org/1999/xhtml\" style=\"font-size: 10px; font-family: Arial, sans-serif; color: black; height: 100%; display: flex; align-items: center; justify-content: center;\">X</div>\n  </foreignObject>\n  <path d=\"M 161.24038696289062,21.797006607055664 Q 212.88233947753906,155.48695373535156 272.2464904785156,23.24491310119629\" stroke=\"gray\" stroke-width=\"2\" fill=\"none\" />\n</svg>"
+        }
+      },
+      {
+        "text": "",
+        "diagram": {
+          "type": "svg",
+          "code": "<svg viewBox=\"0 0 400 200\" xmlns=\"http://www.w3.org/2000/svg\">\n  <defs>\n    <marker id=\"arrowhead_black\" markerWidth=\"10\" markerHeight=\"7\" refX=\"0\" refY=\"3.5\" orient=\"auto\"><polygon points=\"0 0, 10 3.5, 0 7\" fill=\"black\" /></marker>\n  </defs>\n  <line x1=\"200\" y1=\"20\" x2=\"200\" y2=\"180\" stroke=\"black\" stroke-width=\"1\" marker-end=\"url(#arrowhead_black)\" />\n  <foreignObject x=\"190\" y=\"5\" width=\"20\" height=\"15\">\n    <div xmlns=\"http://www.w3.org/1999/xhtml\" style=\"font-size: 10px; font-family: Arial, sans-serif; color: black; height: 100%; display: flex; align-items: center; justify-content: center;\">Y</div>\n  </foreignObject>\n  <line x1=\"20\" y1=\"100\" x2=\"380\" y2=\"100\" stroke=\"black\" stroke-width=\"1\" marker-end=\"url(#arrowhead_black)\" />\n  <foreignObject x=\"370\" y=\"105\" width=\"20\" height=\"15\">\n    <div xmlns=\"http://www.w3.org/1999/xhtml\" style=\"font-size: 10px; font-family: Arial, sans-serif; color: black; height: 100%; display: flex; align-items: center; justify-content: center;\">X</div>\n  </foreignObject>\n  <path d=\"M 156.41403198242188,33.86288833618164 Q 214.3302459716797,212.4379119873047 285.76025390625,33.380252838134766\" stroke=\"gray\" stroke-width=\"2\" fill=\"none\" />\n</svg>"
+        }
+      }
+    ],
+    "sourceFileName": "math_quiz_page_1.png",
+    "text": "¿Cuál de las siguientes gráficas podrían corresponder a la función: \\(f(x) = ax^2 + bx + c\\), cuando \\(a > 0\\), \\(b < 0\\) y \\(c < 0\\)?",
+    "originalQuestionNumber": "3",
+    "internalId": "q-1753894169408-0.31605151955958555",
+    "id": "q-ai-cat-1753897437013-0-3"
+  },
+  {
+    "correct": 1,
+    "explanation": "<ol><li>La función dada es \n\\(f(x) = x^2 + 2x - 3\\)\n. Es una función cuadrática de la forma \n\\(ax^2 + bx + c\\)\n, donde \n\\(a=1\\)\n, \n\\(b=2\\)\n y \n\\(c=-3\\)\n.</li><li>**Opción A: \n\\(f\\)\n tiene un máximo.** Dado que el coeficiente principal \n\\(a=1\\)\n es positivo \n\\((a>0)\\)\n, la parábola abre hacia arriba, lo que significa que la función tiene un valor mínimo, no un máximo. Por lo tanto, esta afirmación es falsa.</li><li>**Opción B: La recta \n\\(x = -1\\)\n, es su eje de simetría.** El eje de simetría de una función cuadrática se calcula con la fórmula \n\\(x = -b/(2a)\\)\n. Sustituyendo los valores, \n\\(x = -2/(2 \t\\times 1) = -2/2 = -1\\)\n. Por lo tanto, la recta \n\\(x = -1\\)\n es su eje de simetría. Esta afirmación es verdadera.</li><li>**Opción C: El vértice está al lado derecho de la ordenada.** El vértice tiene coordenadas \n\\((x_v, y_v)\\)\n. Calculamos \n\\(x_v = -1\\)\n. Un valor de \n\\(x\\)\n negativo significa que el vértice está a la izquierda del eje Y (la ordenada). Por lo tanto, esta afirmación es falsa.</li><li>**Opción D: Para cualquier valor de \n\\(x\\)\n en los reales, la función siempre será no negativa.** Podemos encontrar las raíces de la función igualando \n\\(f(x)=0\\)\n: \n\\(x^2 + 2x - 3 = 0 \n\\rightarrow (x+3)(x-1) = 0\\)\n. Las raíces son \n\\(x=-3\\)\n y \n\\(x=1\\)\n. Para valores de \n\\(x\\)\n entre las raíces (por ejemplo, \n\\(x=0\\)\n), \n\\(f(0) = -3\\)\n, que es un valor negativo. Por lo tanto, la función no siempre es no negativa. Esta afirmación es falsa.</li></ol>",
+    "options": [
+      {
+        "text": "\n\\(f\\)\n tiene un máximo."
+      },
+      {
+        "text": "La recta \n\\(x = -1\\)\n, es su eje de simetría."
+      },
+      {
+        "text": "El vértice está al lado derecho de la ordenada"
+      },
+      {
+        "text": "Para cualquier valor de \n\\(x\\)\n en los reales, la función siempre será no negativa"
+      }
+    ],
+    "sourceFileName": "quiz_page_1.png",
+    "text": "Si \n\\(f(x) = x^2 + 2x - 3\\)\n, entonces ¿cuál de las siguientes afirmaciones es verdadera?",
+    "originalQuestionNumber": "11.",
+    "internalId": "q-1753894153672-0.6592729458818049",
+    "id": "q-ai-cat-1753897437013-0-4"
+  },
+  {
+    "correct": 2,
+    "explanation": "<ol><li>Primero, reescribimos la función para facilitar el análisis: \\(f(x) = -(x^2 - 4) = -x^2 + 4\\).</li><li>Analizamos cada afirmación:</li><li>**A) \"La función toma un valor máximo.\"**: Dado que el coeficiente de \\(x^2\\) es negativo (\\(-1\\)), la parábola se abre hacia abajo, lo que significa que tiene un valor máximo en su vértice. Esta afirmación es VERDADERA.</li><li>**B) \"Las ramas de la parábola asociada a la función se abren hacia abajo.\"**: Como el coeficiente de \\(x^2\\) es negativo (\\(-1\\)), las ramas de la parábola se abren hacia abajo. Esta afirmación es VERDADERA.</li><li>**C) \"La gráfica de la función intersecta al eje de las ordenadas en el punto \\((0, -4))\\).\"**: Para encontrar la intersección con el eje \\(y\\) (eje de las ordenadas), se establece \\(x=0\\). Sustituyendo, \\(f(0) = -(0^2 - 4) = -(-4) = 4\\). Por lo tanto, el punto de intersección es \\((0, 4))\\). Esta afirmación es FALSA.</li><li>**D) \"La gráfica de la función intersecta al eje de las abscisas en los puntos \\((2,0))\\) y \\((-2,0))\\).\"**: Para encontrar las intersecciones con el eje \\(x\\) (eje de las abscisas), se establece \\(f(x)=0\\). \\(0 = -x^2 + 4 \\implies x^2 = 4 \\implies x = \\pm 2\\). Por lo tanto, los puntos de intersección son \\((2,0))\\) y \\((-2,0))\\). Esta afirmación es VERDADERA.</li><li>La pregunta pide la afirmación FALSA, que es la opción C.</li></ol>",
+    "options": [
+      {
+        "text": "La función toma un valor máximo."
+      },
+      {
+        "text": "Las ramas de la parábola asociada a la función se abren hacia abajo."
+      },
+      {
+        "text": "La gráfica de la función intersecta al eje de las ordenadas en el punto \\((0, -4))\\)."
+      },
+      {
+        "text": "La gráfica de la función intersecta al eje de las abscisas en los puntos \\((2,0))\\) y \\((-2,0))\\)."
+      }
+    ],
+    "sourceFileName": "quiz_page_1.png",
+    "text": "39. ¿Cuál de las siguientes afirmaciones es FALSA, con respecto a la función \\(f(x) = -(x^2 - 4))\\), cuando \\(x\\) recorre todos los números reales?",
+    "originalQuestionNumber": "39",
+    "internalId": "q-1753894154477-0.7769916009592641",
+    "id": "q-ai-cat-1753897437013-0-5"
+  },
+  {
+    "correct": 0,
+    "explanation": "<ol><li>Para encontrar los puntos en que la parábola intersecta el eje de las abscisas (eje \\(x\\)), se debe igualar la función a cero: \\(f(x) = 0\\).</li><li>Establecemos la ecuación: \\(x^2 - 3x - 10 = 0\\).</li><li>Factorizamos la ecuación cuadrática buscando dos números que multiplicados den \\(-10\\) y sumados den \\(-3\\). Estos números son \\(5\\) y \\(-2\\).</li><li>La factorización es \\((x-5)(x+2) = 0\\).</li><li>Por lo tanto, las soluciones son \\(x = 5\\) y \\(x = -2\\).</li><li>Los puntos de intersección con el eje \\(x\\) son \\((-2,0)\\) y \\((5,0)\\).</li></ol>",
+    "options": [
+      {
+        "text": "\\((-2,0)\\) y \\((5,0)\\)"
+      },
+      {
+        "text": "\\((2,0)\\) y \\((5,0)\\)"
+      },
+      {
+        "text": "\\((-5,0)\\) y \\((2,0)\\)"
+      },
+      {
+        "text": "\\((-5,0)\\) y \\((-2,0)\\)"
+      }
+    ],
+    "sourceFileName": "image.png",
+    "text": "Los puntos en que la parábola de función \\(f(x) = x^2 - 3x - 10\\) intersecta al eje de las abscisas son:",
+    "originalQuestionNumber": "4",
+    "internalId": "q-1753894146858-0.3508816218969468",
+    "id": "q-ai-cat-1753897437014-1-0"
+  },
+  {
+    "correct": 2,
+    "explanation": "<ol><li>Para determinar los puntos de corte con el eje \\(X\\), se iguala la función a cero: \\(x^2 + 9x + 12 = 0\\).</li><li>Se calcula el discriminante \\(\\Delta = b^2 - 4ac\\). En este caso, \\(a = 1\\), \\(b = 9\\) y \\(c = 12\\).</li><li>Entonces, \\(\\Delta = 9^2 - 4(1)(12) = 81 - 48 = 33\\). Dado que \\(\\Delta \\gt 0\\), la función corta el eje \\(X\\) en dos puntos distintos.</li><li>Las raíces se encuentran con la fórmula general: \\(x = (-b \\pm \\sqrt{\\Delta})/(2a) = (-9 \\pm \\sqrt{33})/2\\).</li><li>Como \\(\\sqrt{33} \\approx 5.74\\), las raíces son \\(x_1 = (-9 - 5.74)/2 \\approx -7.37\\) y \\(x_2 = (-9 + 5.74)/2 \\approx -1.63\\).</li><li>Ambas raíces son negativas, lo que significa que ambos puntos de corte están a la izquierda del eje \\(Y\\).</li></ol>",
+    "options": [
+      {
+        "text": "En ningún punto"
+      },
+      {
+        "text": "En dos puntos, uno a cada lado del eje \\(Y\\)"
+      },
+      {
+        "text": "En dos puntos, ambos a la izquierda del eje \\(Y\\)"
+      },
+      {
+        "text": "En dos puntos, ambos a la derecha del eje \\(Y\\)"
+      }
+    ],
+    "sourceFileName": "quiz_page.png",
+    "text": "Con respecto a la gráfica de \\(f(x) = x^2 + 9x + 12\\), ¿en cuántos puntos corta al eje \\(X\\)?",
+    "originalQuestionNumber": "18",
+    "internalId": "q-1753894152980-0.9764062229304775",
+    "id": "q-ai-cat-1753897437014-1-1"
+  },
+  {
+    "correct": 3,
+    "explanation": "<ol><li>La parábola se abre hacia abajo, lo que significa que el coeficiente principal \\(a\\) debe ser negativo, es decir, \\(a < 0\\). Por lo tanto, la opción A es verdadera.</li><li>La parábola es tangente al eje \\(X\\), lo que implica que tiene una única raíz real. Esto significa que el discriminante de la ecuación cuadrática es cero: \\(b^2 - 4ac = 0\\). Por lo tanto, la opción C es verdadera.</li><li>El vértice de la parábola se encuentra en el eje \\(X\\) positivo. La coordenada \\(x\\) del vértice está dada por \\(x_v = \\frac{-b}{2a}\\). Como se observa en el gráfico, \\(x_v > 0\\).</li><li>Dado que \\(a < 0\\) (la parábola se abre hacia abajo) y \\(x_v = \\frac{-b}{2a} > 0\\), para que la fracción sea positiva, el numerador \\(-b\\) debe ser negativo (ya que el denominador \\(2a\\) es negativo). Si \\(-b < 0\\), entonces \\(b > 0\\).</li><li>Por lo tanto, la afirmación \\(b < 0\\) es siempre falsa.</li></ol>",
+    "options": [
+      {
+        "text": "\\(a < 0\\)"
+      },
+      {
+        "text": "\\(\\frac{-b}{2a} > 0\\)"
+      },
+      {
+        "text": "\\(b^2 - 4ac = 0\\)"
+      },
+      {
+        "text": "\\(b < 0\\)"
+      }
+    ],
+    "sourceFileName": "quiz_page_1.png",
+    "text": "28. Respecto a la función \\(f(x) = ax^2 + bx + c\\) graficada en la figura adjunta, tangente al eje \\(X\\). ¿Cuál de las siguientes afirmaciones es siempre falsa?",
+    "diagram": {
+      "type": "svg",
+      "code": "<svg viewBox=\"0 0 200 200\" xmlns=\"http://www.w3.org/2000/svg\">\n  <defs>\n    <marker id=\"arrowhead_black\" markerWidth=\"10\" markerHeight=\"7\" refX=\"0\" refY=\"3.5\" orient=\"auto\"><polygon points=\"0 0, 10 3.5, 0 7\" fill=\"black\" /></marker>\n  </defs>\n  <foreignObject x=\"182.43923950195312\" y=\"117.32721710205078\" width=\"20\" height=\"15\">\n    <div xmlns=\"http://www.w3.org/1999/xhtml\" style=\"font-size: 10px; font-family: Arial, sans-serif; color: black; height: 100%; display: flex; align-items: center; justify-content: center;\">X</div>\n  </foreignObject>\n  <line x1=\"94.22486114501953\" y1=\"186.44862365722656\" x2=\"95.30896759033203\" y2=\"24.645404815673828\" stroke=\"black\" stroke-width=\"2\" marker-end=\"url(#arrowhead_black)\" />\n  <foreignObject x=\"101.47664642333984\" y=\"7.439244270324707\" width=\"20\" height=\"15\">\n    <div xmlns=\"http://www.w3.org/1999/xhtml\" style=\"font-size: 10px; font-family: Arial, sans-serif; color: black; height: 100%; display: flex; align-items: center; justify-content: center;\">Y</div>\n  </foreignObject>\n  <path d=\"M 161.1685791015625,167.20570373535156 Q 129.7294158935547,47.682716369628906 98.56129455566406,168.28981018066406\" stroke=\"#a51d2d\" stroke-width=\"2\" fill=\"none\" transform=\"scale(1.2,1.2) translate(-20, -20)\" />\n  <line x1=\"21.86060333251953\" y1=\"105.41150665283203\" x2=\"183.1217803955078\" y2=\"105.14047241210938\" stroke=\"black\" stroke-width=\"2\" marker-end=\"url(#arrowhead_black)\" />\n</svg>"
+    },
+    "originalQuestionNumber": "28",
+    "internalId": "q-1753894159744-0.9957632461954544",
+    "id": "q-ai-cat-1753897437014-1-2"
+  },
+  {
+    "correct": 2,
+    "explanation": "<ol><li>Una función corta el eje \\(X\\) en los puntos \\((2,0)\\) y \\((9,0)\\) si \\(x=2\\) y \\(x=9\\) son sus raíces. Esto significa que la función puede expresarse como \\(k(x-2)(x-9)\\), donde \\(k\\) es una constante distinta de cero.</li><li>Desarrollando la expresión \\((x-2)(x-9)\\) obtenemos \\(x^2 - 9x - 2x + 18 = x^2 - 11x + 18\\).</li><li>Analizamos cada opción:</li><li>A) \\(f(x) = x^2 - 11x + 18\\). Esta función es exactamente \\((x-2)(x-9)\\), por lo tanto, corta el eje \\(X\\) en \\((2,0)\\) y \\((9,0)\\).</li><li>B) \\(h(x) = -2x^2 + 22x - 36 = -2(x^2 - 11x + 18)\\). Esta función es un múltiplo de \\((x-2)(x-9)\\), por lo tanto, también corta el eje \\(X\\) en \\((2,0)\\) y \\((9,0)\\).</li><li>C) \\(g(x) = x^2 - 2x = x(x-2)\\). Las raíces de esta función son \\(x=0\\) y \\(x=2\\). No corta el eje \\(X\\) en \\((9,0)\\). Esta es la función que no cumple la condición.</li><li>D) \\(p(x) = 0,5x^2 - 5,5x + 9 = 0,5(x^2 - 11x + 18)\\). Esta función también es un múltiplo de \\((x-2)(x-9)\\), por lo tanto, corta el eje \\(X\\) en \\((2,0)\\) y \\((9,0)\\).</li></ol>",
+    "options": [
+      {
+        "text": "\\(f(x) = x^2 - 11x + 18\\)"
+      },
+      {
+        "text": "\\(h(x) = -2x^2 + 22x - 36\\)"
+      },
+      {
+        "text": "\\(g(x) = x^2 - 2x\\)"
+      },
+      {
+        "text": "\\(p(x) = 0,5x^2 - 5,5x + 9\\)"
+      }
+    ],
+    "sourceFileName": "quiz_page_1.png",
+    "text": "¿Cuál de estas funciones no tiene una gráfica que corta el eje \\(X\\) en los puntos \\((2, 0)\\) y \\((9, 0)\\) ?",
+    "originalQuestionNumber": "22",
+    "internalId": "q-1753894150105-0.7920595208049227",
+    "id": "q-ai-cat-1753897437014-1-3"
+  },
+  {
+    "correct": 3,
+    "explanation": "<ol><li>Una función cuadrática con raíces en \n\\(x_1\\)\n y \n\\(x_2\\)\n se puede expresar como \n\\(f(x) = k(x-x_1)(x-x_2)\\)\n, donde \n\\(k\\)\n es una constante real diferente de cero.</li><li>Dado que las intercepciones con el eje de las abscisas (raíces) son \n\\((5,0)\\)\n y \n\\((10,0)\\)\n, la función se puede escribir como \n\\(f(x) = k(x-5)(x-10)\\)\n.</li><li>Expandiendo la expresión, obtenemos \n\\(f(x) = k(x^2 - 15x + 50)\\)\n.</li><li>La alternativa D afirma que \"La única función para esas intersecciones es: \n\\(f(x) = x^2 - 15x + 50\\)\n\". Esto implica que \n\\(k\\)\n debe ser 1.</li><li>Sin embargo, cualquier valor de \n\\(k \ne 0\\)\n resultará en una función con las mismas intercepciones. Por lo tanto, la función dada con \n\\(k=1\\)\n no es la única. Esta afirmación es falsa.</li><li>Las otras opciones son verdaderas: A) Dos raíces reales distintas implican un discriminante positivo. B) Si \n\\(a > 0\\)\n, la parábola abre hacia arriba, el eje de simetría es \n\\(x=7.5\\)\n, y \n\\(f(7.5) = a(7.5-5)(7.5-10) = a(2.5)(-2.5) = -6.25a\\)\n. Si \n\\(a>0\\)\n, entonces \n\\(-6.25a<0\\)\n, por lo que el vértice \n\\((7.5, -6.25a)\\)\n está en el cuarto cuadrante. C) El eje de simetría se calcula como el promedio de las raíces: \n\\((5+10)/2 = 7.5\\)\n.</li></ol>",
+    "options": [
+      {
+        "text": "Su discriminante es positivo"
+      },
+      {
+        "text": "Si \n\\(a > 0\\)\n, entonces el vértice debe estar en el cuarto cuadrante"
+      },
+      {
+        "text": "Su eje de simetría es la recta: \n\\(x = 7,5\\)\n"
+      },
+      {
+        "text": "La única función para esas intersecciones es: \n\\(f(x) = x^2 - 15x + 50\\)\n"
+      }
+    ],
+    "sourceFileName": "quiz_page_1.png",
+    "text": "Si las intercepciones con la abscisa de una función cuadrática: \n\\(f(x) = ax^2 + bx + c\\)\n corresponden a los puntos: \n\\((5,0)\\)\n y \n\\((10,0)\\)\n, ¿cuál de las siguientes alternativas es falsa, respecto a ello?",
+    "originalQuestionNumber": "10.",
+    "internalId": "q-1753894153672-0.6692624226259329",
+    "id": "q-ai-cat-1753897437014-1-4"
+  },
+  {
+    "correct": 3,
+    "explanation": "<ol><li>La coordenada x del vértice de una función cuadrática de la forma \\(f(x) = ax^2 + bx + c\\) se calcula con la fórmula \\(x_v = -b/(2a)\\).</li><li>La coordenada y del vértice se calcula sustituyendo \\(x_v\\) en la función: \\(y_v = f(x_v)\\).</li><li>El problema pide encontrar la función cuyo vértice es el punto \\((1, -12)\\), lo que significa que \\(x_v = 1\\) y \\(y_v = -12\\).</li><li>Evaluamos la coordenada \\(x_v\\) para cada opción:<ul><li>A) \\(f(x) = x^2 - 6x + 9\\): Aquí \\(a=1, b=-6\\). Entonces, \\(x_v = -(-6)/(2 \\cdot 1) = 6/2 = 3\\). Incorrecto.</li><li>B) \\(f(x) = 3x^2 + 6x + 9\\): Aquí \\(a=3, b=6\\). Entonces, \\(x_v = -(6)/(2 \\cdot 3) = -6/6 = -1\\). Incorrecto.</li><li>C) \\(f(x) = 3x^2 - 6x + 9\\): Aquí \\(a=3, b=-6\\). Entonces, \\(x_v = -(-6)/(2 \\cdot 3) = 6/6 = 1\\). Este coincide con la \\(x_v\\) deseada.</li><li>D) \\(f(x) = 3x^2 - 6x - 9\\): Aquí \\(a=3, b=-6\\). Entonces, \\(x_v = -(-6)/(2 \\cdot 3) = 6/6 = 1\\). Este también coincide con la \\(x_v\\) deseada.</li></ul></li><li>Ahora, para las opciones C y D (que tienen \\(x_v = 1\\)), calculamos la coordenada \\(y_v = f(1)\\):<ul><li>C) \\(f(1) = 3(1)^2 - 6(1) + 9 = 3 - 6 + 9 = 6\\). No es \\(-12\\).</li><li>D) \\(f(1) = 3(1)^2 - 6(1) - 9 = 3 - 6 - 9 = -12\\). Este coincide con la \\(y_v\\) deseada.</li></ul></li><li>Por lo tanto, la función que tiene como vértice el punto \\((1, -12)\\) es la opción D.</li></ol>",
+    "options": [
+      {
+        "text": "\\(f(x) = x^2 - 6x + 9\\)"
+      },
+      {
+        "text": "\\(f(x) = 3x^2 + 6x + 9\\)"
+      },
+      {
+        "text": "\\(f(x) = 3x^2 - 6x + 9\\)"
+      },
+      {
+        "text": "\\(f(x) = 3x^2 - 6x - 9\\)"
+      }
+    ],
+    "sourceFileName": "clase_15_matematicas_1_page_1.png",
+    "text": "¿Cuál de las siguientes funciones tienen como vértice al punto \\((1, -12)\\)?",
+    "originalQuestionNumber": "2",
+    "internalId": "q-1753894189566-0.23498675769749655",
+    "id": "q-ai-cat-1753897437014-2-0"
+  },
+  {
+    "correct": 0,
+    "explanation": "<ol><li>Para la función cuadrática \\(f(x) = ax^2 + bx + c\\), la coordenada \\(x\\) del vértice se calcula como \\(x_v = -b/(2a)\\).</li><li>Para \\(f(x) = 3x^2 + x - 5\\), tenemos \\(a = 3\\) y \\(b = 1\\). Así, \\(x_v = -1/(2 \\times 3) = -1/6\\).</li><li>Para encontrar la ordenada \\(y\\) del vértice, sustituimos \\(x_v\\) en la función: \\(y_v = f(-1/6) = 3(-1/6)^2 + (-1/6) - 5\\).</li><li>Calculando: \\(y_v = 3(1/36) - 1/6 - 5 = 1/12 - 1/6 - 5 = 1/12 - 2/12 - 60/12 = (1 - 2 - 60)/12 = -61/12\\).</li></ol>",
+    "options": [
+      {
+        "text": "\\(-\\frac{61}{12}\\)"
+      },
+      {
+        "text": "\\(-\\frac{31}{6}\\)"
+      },
+      {
+        "text": "\\(-\\frac{1}{6}\\)"
+      },
+      {
+        "text": "\\(-\\frac{1}{3}\\)"
+      }
+    ],
+    "sourceFileName": "quiz_page.png",
+    "text": "La ordenada del vértice de la función cuadrática \\(f(x) = 3x^2 + x - 5\\) es:",
+    "originalQuestionNumber": "17",
+    "internalId": "q-1753894152980-0.5410248717188404",
+    "id": "q-ai-cat-1753897437014-2-1"
+  },
+  {
+    "correct": 2,
+    "explanation": "<ol><li>La función dada es una parábola: \\(f(x) = x^2 - 40x + 11\\).</li><li>Para encontrar el mínimo valor de una parábola de la forma \\(ax^2 + bx + c\\), donde \\(a > 0\\) (en este caso \\(a=1\\)), calculamos la coordenada \\(x\\) del vértice usando la fórmula \\(x_v = -b / (2a)\\).</li><li>Sustituyendo \\(a=1\\) y \\(b=-40\\), obtenemos \\(x_v = -(-40) / (2 \\cdot 1) = 40 / 2 = 20\\).</li><li>Ahora, sustituimos este valor de \\(x_v\\) en la función para encontrar el valor mínimo de \\(f(x)\\): \\(f(20) = (20)^2 - 40(20) + 11 = 400 - 800 + 11 = -400 + 11 = -389\\).</li></ol>",
+    "options": [
+      {
+        "text": "-20"
+      },
+      {
+        "text": "20"
+      },
+      {
+        "text": "-389"
+      },
+      {
+        "text": "11"
+      }
+    ],
+    "sourceFileName": "quiz_page_1.png",
+    "text": "El mínimo valor que alcanza la función \\(f(x) = x^2 - 40x + 11\\) es:",
+    "originalQuestionNumber": "21",
+    "internalId": "q-1753894150105-0.8793758837138447",
+    "id": "q-ai-cat-1753897437014-2-2"
+  },
+  {
+    "correct": 3,
+    "explanation": "<ol><li>La función es una parábola de la forma \\(f(x) = ax^2 + bx + c\\), donde \\(a = 3\\), \\(b = -5\\) y \\(c = 2\\).</li><li>La coordenada \\(x\\) del vértice se calcula con la fórmula \\(x_v = -\\frac{b}{2a}\\).</li><li>Sustituyendo los valores: \\(x_v = -\\frac{-5}{2(3)} = \\frac{5}{6}\\).</li><li>La coordenada \\(y\\) del vértice se calcula sustituyendo \\(x_v\\) en la función: \\(y_v = f\\left(\\frac{5}{6}\\right) = 3\\left(\\frac{5}{6}\\right)^2 - 5\\left(\\frac{5}{6}\\right) + 2\\).</li><li>Calculando \\(y_v\\): \\(y_v = 3\\left(\\frac{25}{36}\\right) - \\frac{25}{6} + 2 = \\frac{25}{12} - \\frac{50}{12} + \\frac{24}{12} = \\frac{25 - 50 + 24}{12} = \\frac{-1}{12}\\).</li><li>El vértice se ubica en las coordenadas \\(\\left(\\frac{5}{6}, -\\frac{1}{12}\\right)\\).</li><li>Como la coordenada \\(x\\) es positiva (\\(x_v > 0\\)) y la coordenada \\(y\\) es negativa (\\(y_v < 0\\)), el vértice se encuentra en el IV Cuadrante del plano cartesiano.</li></ol>",
+    "options": [
+      {
+        "text": "I Cuadrante"
+      },
+      {
+        "text": "II Cuadrante"
+      },
+      {
+        "text": "III Cuadrante"
+      },
+      {
+        "text": "IV Cuadrante"
+      }
+    ],
+    "sourceFileName": "quiz_page_1.png",
+    "text": "¿En qué cuadrante del plano cartesiano se ubica el vértice de la función \\(f(x) = 3x^2 - 5x + 2\\)?",
+    "originalQuestionNumber": "33",
+    "internalId": "q-1753894151146-0.9712223289608067",
+    "id": "q-ai-cat-1753897437014-2-3"
+  },
+  {
+    "correct": 3,
+    "explanation": "<ol><li>Identificamos que la función dada, \\(f(x) = x^2 + 2ax - 1\\), es una parábola.</li><li>Dado que el coeficiente principal (el de \\(x^2\\)) es \\(1\\) (positivo), la parábola se abre hacia arriba, lo que significa que tiene un valor mínimo en su vértice.</li><li>La coordenada \\(x\\) del vértice de una parábola de la forma \\(f(x) = Ax^2 + Bx + C\\) se calcula con la fórmula \\(x = -B/(2A)\\).</li><li>En este caso, \\(A = 1\\) y \\(B = 2a\\).</li><li>Sustituimos los valores en la fórmula: \\(x = -(2a)/(2 \\cdot 1) = -2a/2 = -a\\).</li><li>Por lo tanto, el valor de \\(x\\) donde la función alcanza su valor mínimo es \\(-a\\).</li></ol>",
+    "options": [
+      {
+        "text": "\\(-1\\)"
+      },
+      {
+        "text": "\\(3a^2 - 1\\)"
+      },
+      {
+        "text": "\\(-a^2 - 1\\)"
+      },
+      {
+        "text": "\\(-a\\)"
+      }
+    ],
+    "sourceFileName": "quiz_page_1.png",
+    "text": "38. Sea la función \\(f\\) definida por: \\[f(x) = x^2 + 2ax - 1\\] con \\(a \\neq 0\\) y dominio el conjunto de los números reales. El valor de \\(x\\) donde la función alcanza su valor mínimo es:",
+    "originalQuestionNumber": "38",
+    "internalId": "q-1753894154477-0.9718402665612502",
+    "id": "q-ai-cat-1753897437014-2-4"
+  },
+  {
+    "correct": 2,
+    "explanation": "<ol><li>La función es una parábola de la forma \\(f(x) = ax^2 + bx + c\\), donde \\(a = -1\\), \\(b = 4\\) y \\(c = -3\\).</li><li>Como el coeficiente \\(a\\) es negativo (\\(-1 < 0\\)), la parábola se abre hacia abajo, lo que significa que la función es creciente hasta el vértice y decreciente después del vértice.</li><li>Calculamos la coordenada \\(x\\) del vértice utilizando la fórmula \\(x_v = -\\frac{b}{2a}\\).</li><li>Sustituyendo los valores: \\(x_v = -\\frac{4}{2(-1)} = -\\frac{4}{-2} = 2\\).</li><li>Por lo tanto, la función es decreciente para todos los valores de \\(x\\) mayores o iguales a la coordenada \\(x\\) del vértice.</li><li>El intervalo de decrecimiento es \\([2, +\\infty[\\).</li></ol>",
+    "options": [
+      {
+        "text": "\\(]-\\infty, 1]\\)"
+      },
+      {
+        "text": "\\(]-\\infty, 2]\\)"
+      },
+      {
+        "text": "\\([2, +\\infty[\\)"
+      },
+      {
+        "text": "\\([1, +\\infty[\\)"
+      }
+    ],
+    "sourceFileName": "quiz_page_1.png",
+    "text": "¿Cuál es el intervalo que representa los valores de los cuales la función \\(f(x) = -x^2 + 4x - 3\\) es decreciente?",
+    "originalQuestionNumber": "34",
+    "internalId": "q-1753894151146-0.71636223305808",
+    "id": "q-ai-cat-1753897437014-2-5"
+  },
+  {
+    "correct": 0,
+    "explanation": "<ol><li>Se nos da la función \\(f(x) = x^2 + mx + 6\\).</li><li>También se nos da la condición \\(f(-4) = 2\\).</li><li>Sustituimos \\(x = -4\\) en la función \\(f(x)\\): \\(f(-4) = (-4)^2 + m(-4) + 6\\).</li><li>Calculamos los términos: \\(f(-4) = 16 - 4m + 6\\).</li><li>Simplificamos: \\(f(-4) = 22 - 4m\\).</li><li>Ahora, igualamos esta expresión a \\(2\\), según la condición dada: \\(22 - 4m = 2\\).</li><li>Restamos \\(22\\) de ambos lados de la ecuación: \\(-4m = 2 - 22\\).</li><li>Simplificamos: \\(-4m = -20\\).</li><li>Dividimos por \\(-4\\) para encontrar el valor de \\(m\\): \\(m = \\frac{-20}{-4}\\).</li><li>Por lo tanto, \\(m = 5\\).</li></ol>",
+    "options": [
+      {
+        "text": "\\(5\\)"
+      },
+      {
+        "text": "\\(3\\)"
+      },
+      {
+        "text": "\\(2\\)"
+      },
+      {
+        "text": "\\(-2\\)"
+      }
+    ],
+    "sourceFileName": "quiz_page_1.png",
+    "text": "30. Si \\(f(x) = x^2 + mx + 6\\) y \\(f(-4) = 2\\), entonces \\(m\\) es igual a:",
+    "originalQuestionNumber": "30",
+    "internalId": "q-1753894159744-0.007272283938338342",
+    "id": "q-ai-cat-1753897437014-2-6"
+  },
+  {
+    "correct": 2,
+    "explanation": "<ol><li>Se nos da la función \\(f(x) = 2x^2 - 5x + 3\\) y la condición \\(f(a) = 1\\).</li><li>Sustituimos \\(x\\) por \\(a\\) en la función e igualamos a \\(1\\): \\(2a^2 - 5a + 3 = 1\\).</li><li>Restamos \\(1\\) a ambos lados para formar una ecuación cuadrática igualada a cero: \\(2a^2 - 5a + 2 = 0\\).</li><li>Resolvemos esta ecuación cuadrática. Podemos usar factorización o la fórmula cuadrática. Por factorización, buscamos dos números que multiplicados den \\(2 \\times 2 = 4\\) y sumados den \\(-5\\). Estos son \\(-1\\) y \\(-4\\).</li><li>Reescribimos el término central: \\(2a^2 - 4a - a + 2 = 0\\).</li><li>Factorizamos por agrupación: \\(2a(a - 2) - 1(a - 2) = 0\\).</li><li>Factor común \\((a - 2)\\): \\((2a - 1)(a - 2) = 0\\).</li><li>Igualamos cada factor a cero para encontrar los valores de \\(a\\):<ul><li>\\(2a - 1 = 0 \\implies 2a = 1 \\implies a = \\frac{1}{2}\\)</li><li>\\(a - 2 = 0 \\implies a = 2\\)</li></ul></li><li>Por lo tanto, los valores posibles para \\(a\\) son \\(\\frac{1}{2}\\) o \\(2\\).</li></ol>",
+    "options": [
+      {
+        "text": "\\(-\\frac{1}{2}\\) ó \\(2\\)"
+      },
+      {
+        "text": "\\(-\\frac{1}{2}\\) ó \\(-2\\)"
+      },
+      {
+        "text": "\\(\\frac{1}{2}\\) ó \\(2\\)"
+      },
+      {
+        "text": "El único valor posible es el \\(2\\)"
+      }
+    ],
+    "sourceFileName": "quiz_page_1.png",
+    "text": "29. Considere la función cuadrática \\(f(x) = 2x^2 - 5x + 3\\). Se sabe que existe un número real \\(a\\) tal que \\(f(a) = 1\\). ¿Qué valores podrían corresponder al valor de \\(a\\)?",
+    "originalQuestionNumber": "29",
+    "internalId": "q-1753894159744-0.47584744105005383",
+    "id": "q-ai-cat-1753897437014-2-7"
+  },
+  {
+    "correct": 1,
+    "explanation": "<ol><li>La función dada \\(S(x) = -x^2 + 6x + 8\\) es una parábola que abre hacia abajo (debido al coeficiente negativo de \\(x^2\\), \\(a = -1\\)). Por lo tanto, su valor máximo se encuentra en el vértice.</li><li>La coordenada \\(x\\) del vértice de una parábola de la forma \\(f(x) = ax^2 + bx + c\\) se calcula utilizando la fórmula \\(x = -b / (2a)\\).</li><li>En nuestra función, \\(a = -1\\) y \\(b = 6\\).</li><li>Sustituimos estos valores en la fórmula: \\(x = -6 / (2 \\cdot -1) = -6 / -2 = 3\\).</li><li>Por lo tanto, el número de artículos que corresponde al costo máximo es \\(3\\).</li></ol>",
+    "options": [
+      {
+        "text": "\\(-3\\)"
+      },
+      {
+        "text": "\\(3\\)"
+      },
+      {
+        "text": "\\(2\\)"
+      },
+      {
+        "text": "\\(9\\)"
+      }
+    ],
+    "sourceFileName": "image.png",
+    "text": "El costo mensual en servicios de aseo en una casa se determina con la función: \\(S(x) = -x^2 + 6x + 8\\), donde \\(x\\) es el número de artículos de aseo comprados. ¿Cuál será el número de artículos mensuales que se compran considerando el máximo costo?",
+    "originalQuestionNumber": "5",
+    "internalId": "q-1753894146858-0.5526561755847903",
+    "id": "q-ai-cat-1753897437014-3-0"
+  },
+  {
+    "correct": 0,
+    "explanation": "<ol><li>La función de costo total es \\(C(x) = -x^2 + 6x + 7\\).</li><li>Esta es una función cuadrática con un coeficiente principal negativo (\\(a = -1\\)), lo que significa que la parábola se abre hacia abajo y tiene un valor máximo.</li><li>El valor máximo de una función cuadrática \\(ax^2 + bx + c\\) ocurre en la abscisa del vértice, dada por la fórmula \\(x_v = -b / (2a)\\).</li><li>En este caso, \\(a = -1\\) y \\(b = 6\\).</li><li>Sustituyendo los valores: \\(x_v = -(6) / (2 \t\\times -1) = -6 / -2 = 3\\).</li><li>Por lo tanto, se deben producir \\(3\\) unidades para que el costo total de producción sea máximo.</li></ol>",
+    "options": [
+      {
+        "text": "\\(3\\) unidades"
+      },
+      {
+        "text": "\\(10\\) unidades"
+      },
+      {
+        "text": "\\(1\\) unidad"
+      },
+      {
+        "text": "\\(4\\) unidades"
+      }
+    ],
+    "sourceFileName": "image.png",
+    "text": "En una empresa, el costo total de producción (en millones de pesos) de cierto producto se modela con la función \\(C\\), tal que: \\[C(x) = -x^2 + 6x + 7\\] donde \\(x\\) representa la cantidad total de unidades producidas de cierto producto. ¿Cuántas unidades se producen de dicho producto cuando el costo total de producción es máximo?",
+    "internalId": "q-1753894142740-0.9485841783745311",
+    "id": "q-ai-cat-1753897437014-3-1"
+  },
+  {
+    "correct": 1,
+    "explanation": "<ol><li>El cerco alambrado de \\(40\\) metros representa el perímetro del jardín rectangular.</li><li>Si las dimensiones del rectángulo son largo \\(l\\) y ancho \\(w\\), el perímetro es \\(P = 2l + 2w\\).</li><li>Dado que \\(P = 40\\) metros, tenemos \\(2l + 2w = 40\\), lo que simplifica a \\(l + w = 20\\).</li><li>El área del jardín es \\(A = l \t\\times w\\).</li><li>Para maximizar el área de un rectángulo con un perímetro fijo, las dimensiones deben ser iguales, es decir, el rectángulo debe ser un cuadrado.</li><li>Si \\(l = w\\), entonces \\(l + l = 20\\), lo que significa \\(2l = 20\\), y por lo tanto \\(l = 10\\) metros.</li><li>Entonces, \\(w = 10\\) metros también. Las dimensiones deben ser \\(10\\) y \\(10\\) metros para maximizar el área.</li><li>Alternativamente, podemos expresar el área en términos de una sola variable: de \\(l + w = 20\\), obtenemos \\(l = 20 - w\\). Sustituyendo en la fórmula del área, \\(A(w) = (20 - w)w = 20w - w^2\\). Esta es una función cuadrática \\(A(w) = -w^2 + 20w\\) que tiene un máximo en el vértice \\(w_v = -b / (2a) = -20 / (2 \t\\times -1) = 10\\). Si \\(w = 10\\), entonces \\(l = 20 - 10 = 10\\).</li></ol>",
+    "options": [
+      {
+        "text": "\\(5\\) y \\(15\\)"
+      },
+      {
+        "text": "\\(10\\) y \\(10\\)"
+      },
+      {
+        "text": "\\(8\\) y \\(12\\)"
+      },
+      {
+        "text": "\\(9\\) y \\(11\\)"
+      }
+    ],
+    "sourceFileName": "image.png",
+    "text": "El propietario de una casa tiene \\(40\\) metros de cerco alambrado y los quiere destinar para cercar lo que será su futuro jardín rectangular. ¿Cuáles deben ser las dimensiones del cerco rectangular, de modo que el área destinada al jardín sea de mayor superficie posible?",
+    "internalId": "q-1753894142741-0.5546027644639195",
+    "id": "q-ai-cat-1753897437014-3-2"
+  },
+  {
+    "correct": 1,
+    "explanation": "<ol><li>Definir las variables: Sea \\( x \\) el número de incrementos de \\( \\$10 \\) en el precio.</li><li>Expresar el precio y el número de habitaciones en función de \\( x \\): El precio por habitación será \\( P(x) = 300 + 10x \\). El número de habitaciones ocupadas será \\( N(x) = 40 - x \\).</li><li>Escribir la función de ingreso: El ingreso total \\( I(x) \\) es el producto del precio por el número de habitaciones, \\( I(x) = (300 + 10x)(40 - x) \\).</li><li>Expandir la función de ingreso: \\( I(x) = 12000 - 300x + 400x - 10x^2 = -10x^2 + 100x + 12000 \\).</li><li>Encontrar el valor de \\( x \\) que maximiza el ingreso: Esta es una parábola que abre hacia abajo, por lo que su máximo se encuentra en el vértice. La coordenada \\( x \\) del vértice es \\( x = -b/(2a) \\). Aquí, \\( a = -10 \\) y \\( b = 100 \\). Por lo tanto, \\( x = -100/(2 \\cdot -10) = -100/(-20) = 5 \\).</li><li>Calcular el precio óptimo: El precio de cada habitación debe ser \\( P(5) = 300 + 10(5) = 300 + 50 = \\$350 \\).</li></ol>",
+    "options": [
+      {
+        "text": "\\( \\$340 \\)"
+      },
+      {
+        "text": "\\( \\$350 \\)"
+      },
+      {
+        "text": "\\( \\$360 \\)"
+      },
+      {
+        "text": "\\( \\$370 \\)"
+      }
+    ],
+    "sourceFileName": "quiz_page_1.png",
+    "text": "El gerente de un hotel que tiene 40 habitaciones, sabe que en cierto período si el precio por pieza es de \\( \\$300 \\), entonces se llenan todas las habitaciones. Por otro lado, un estudio le muestra que cada \\( \\$10 \\) que incremente el precio de una habitación, tendrá un cliente menos. ¿Cuál debe ser el precio de cada habitación de modo que el ingreso del hotel en ese período sea máximo?",
+    "originalQuestionNumber": "13",
+    "internalId": "q-1753894149625-0.4385026118804164",
+    "id": "q-ai-cat-1753897437014-3-3"
+  },
+  {
+    "correct": 2,
+    "explanation": "<ol><li>Utilizar el valor de \\( x \\) que maximiza el ingreso de la pregunta anterior: En la pregunta 13, determinamos que \\( x = 5 \\) (es decir, 5 incrementos de \\( \\$10 \\) en el precio) maximiza el ingreso.</li><li>Sustituir \\( x = 5 \\) en la función de ingreso: La función de ingreso era \\( I(x) = -10x^2 + 100x + 12000 \\).</li><li>Calcular el ingreso máximo: \\( I(5) = -10(5)^2 + 100(5) + 12000 = -10(25) + 500 + 12000 = -250 + 500 + 12000 = 250 + 12000 = \\$12250 \\).</li></ol>",
+    "options": [
+      {
+        "text": "\\( \\$12.100 \\)"
+      },
+      {
+        "text": "\\( \\$12.200 \\)"
+      },
+      {
+        "text": "\\( \\$12.250 \\)"
+      },
+      {
+        "text": "\\( \\$12.300 \\)"
+      }
+    ],
+    "sourceFileName": "quiz_page_1.png",
+    "text": "Respecto a la pregunta anterior, ¿cuál será el ingreso máximo?",
+    "originalQuestionNumber": "14",
+    "internalId": "q-1753894149625-0.7339103163793975",
+    "id": "q-ai-cat-1753897437014-3-4"
+  },
+  {
+    "correct": 1,
+    "explanation": "<ol><li>La función de altura es una parábola: \\(y(t) = -5t^2 + 2t + 9\\).</li><li>Para verificar la altura inicial, evaluamos en \\(t=0\\): \\(y(0) = 9 + 2(0) - 5(0)^2 = 9\\, \\text{metros}\\). Por lo tanto, la opción A es falsa.</li><li>Para encontrar el tiempo en que la pelota cae al suelo, igualamos \\(y(t) = 0\\): \\(-5t^2 + 2t + 9 = 0\\). Usamos la fórmula cuadrática \\(t = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}\\).</li><li>Sustituyendo \\(a=-5\\), \\(b=2\\) y \\(c=9\\): \\(t = \\frac{-2 \\pm \\sqrt{2^2 - 4(-5)(9)}}{2(-5)} = \\frac{-2 \\pm \\sqrt{4 + 180}}{-10} = \\frac{-2 \\pm \\sqrt{184}}{-10}\\).</li><li>Simplificando la raíz: \\(\\sqrt{184} = \\sqrt{4 \\times 46} = 2\\sqrt{46}\\). Así, \\(t = \\frac{-2 \\pm 2\\sqrt{46}}{-10} = \\frac{-1 \\pm \\sqrt{46}}{-5} = \\frac{1 \\mp \\sqrt{46}}{5}\\).</li><li>Dado que el tiempo debe ser positivo, tomamos la solución \\(t = \\frac{1 + \\sqrt{46}}{5}\\) segundos. Por lo tanto, la opción B es verdadera.</li><li>Para la altura máxima, el tiempo se calcula con \\(t = -b/(2a)\\): \\(t = -2/(2 \\times -5) = -2/(-10) = 0.2\\) segundos. La opción C afirma \\(0.4\\) segundos, por lo que es falsa.</li><li>La altura máxima es \\(y(0.2) = 9 + 2(0.2) - 5(0.2)^2 = 9 + 0.4 - 5(0.04) = 9 + 0.4 - 0.2 = 9.2\\) metros. La opción D afirma \\(1/5\\) metros, por lo que es falsa.</li></ol>",
+    "options": [
+      {
+        "text": "La pelota se lanzó desde una altura inicial de \\(0 \\, \\text{metros}\\)."
+      },
+      {
+        "text": "La pelota cae al suelo luego de \\(\\left(\\frac{1+\\sqrt{46}}{5}\\right)\\) segundos."
+      },
+      {
+        "text": "La pelota alcanza su altura máxima tras \\(0,4\\) segundos desde su lanzamiento."
+      },
+      {
+        "text": "La altura máxima que alcanza la pelota es \\(\\frac{1}{5}\\) metros"
+      }
+    ],
+    "sourceFileName": "quiz_page_1.png",
+    "text": "La altura \\(y\\) en metros a la que se encuentra una pelota luego de ser lanzada desde cierta altura, está descrita en función del tiempo \\(t\\) en segundos que transcurre desde su lanzamiento según la función: \\(y(t) = 9 + 2t - 5t^2\\). Al respecto, ¿cuál de las siguientes afirmaciones es verdadera?",
+    "originalQuestionNumber": "26",
+    "internalId": "q-1753894149964-0.7597966201612625",
+    "id": "q-ai-cat-1753897437014-3-5"
+  }
+];
+        const categories = [
+  {
+    "id": "ai-cat-1753897437013-0",
+    "title": "Fundamentos y Propiedades Generales",
+    "description": "<p>Esta sección cubre los conceptos básicos de las funciones cuadráticas, incluyendo su forma general, la influencia de los coeficientes en la gráfica y la identificación de parábolas.</p><strong>Fórmulas Clave:</strong><ul><li>Forma general: \\(f(x) = ax^2 + bx + c\\)</li></ul><p>Recuerda que el coeficiente \\(<strong>a</strong>\\) determina la concavidad (si \\(a > 0\\) la parábola abre hacia arriba, si \\(a < 0\\) abre hacia abajo) y la 'apertura' de la parábola. El coeficiente \\(<strong>c</strong>\\) indica la intersección con el eje Y (\\((0, c)\\)).</p>",
+    "summaryKey": "ai-cat-1753897437013-0",
+    "problem_ids": [
+      "q-ai-cat-1753897437013-0-0",
+      "q-ai-cat-1753897437013-0-1",
+      "q-ai-cat-1753897437013-0-2",
+      "q-ai-cat-1753897437013-0-3",
+      "q-ai-cat-1753897437013-0-4",
+      "q-ai-cat-1753897437013-0-5"
+    ]
+  },
+  {
+    "id": "ai-cat-1753897437014-1",
+    "title": "Intersecciones con los Ejes y Discriminante",
+    "description": "<p>Aquí explorarás cómo las funciones cuadráticas interactúan con los ejes cartesianos, especialmente con el eje X (las raíces o ceros de la función).</p><strong>Fórmulas Clave:</strong><ul><li><strong>Fórmula General o Cuadrática:</strong> Para encontrar las raíces de \\(ax^2 + bx + c = 0\\): \\[x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}\\]</li><li><strong>Discriminante (\\(\\Delta\\)):</strong> \\(\\Delta = b^2 - 4ac\\)</li></ul><p>El discriminante es crucial para determinar la naturaleza de las raíces:</p><ul><li>Si \\(<strong>\\Delta > 0</strong>\\): Dos raíces reales y distintas (la parábola corta el eje X en dos puntos).</li><li>Si \\(<strong>\\Delta = 0</strong>\\): Una raíz real (o doble), la parábola es tangente al eje X.</li><li>Si \\(<strong>\\Delta < 0</strong>\\): No hay raíces reales (la parábola no corta el eje X).</li></ul>",
+    "summaryKey": "ai-cat-1753897437014-1",
+    "problem_ids": [
+      "q-ai-cat-1753897437014-1-0",
+      "q-ai-cat-1753897437014-1-1",
+      "q-ai-cat-1753897437014-1-2",
+      "q-ai-cat-1753897437014-1-3",
+      "q-ai-cat-1753897437014-1-4"
+    ]
+  },
+  {
+    "id": "ai-cat-1753897437014-2",
+    "title": "Vértice, Rango y Resolución de Ecuaciones",
+    "description": "<p>Esta sección se centra en el punto más importante de la parábola: el vértice, que representa el valor máximo o mínimo de la función. También abordarás el rango, los intervalos de crecimiento/decrecimiento y la resolución de ecuaciones cuadráticas.</p><strong>Fórmulas Clave:</strong><ul><li><strong>Coordenada X del Vértice:</strong> \\(x_v = -\\frac{b}{2a}\\)</li><li><strong>Coordenada Y del Vértice:</strong> \\(y_v = f(x_v)\\)</li></ul><p>El <strong>rango</strong> de una función cuadrática es \\( [y_v, \\infty) \\) si \\(a > 0\\) o \\( (-\\infty, y_v] \\) si \\(a < 0\\). El eje de simetría es la recta vertical \\(<strong>x = x_v</strong>\\). Los intervalos de crecimiento y decrecimiento cambian en el vértice.</p>",
+    "summaryKey": "ai-cat-1753897437014-2",
+    "problem_ids": [
+      "q-ai-cat-1753897437014-2-0",
+      "q-ai-cat-1753897437014-2-1",
+      "q-ai-cat-1753897437014-2-2",
+      "q-ai-cat-1753897437014-2-3",
+      "q-ai-cat-1753897437014-2-4",
+      "q-ai-cat-1753897437014-2-5",
+      "q-ai-cat-1753897437014-2-6",
+      "q-ai-cat-1753897437014-2-7"
+    ]
+  },
+  {
+    "id": "ai-cat-1753897437014-3",
+    "title": "Aplicaciones y Modelado",
+    "description": "<p>Aquí aplicarás tus conocimientos sobre funciones cuadráticas para resolver problemas del mundo real. Muchas situaciones que involucran maximizar o minimizar una cantidad (como ganancias, áreas, alturas) pueden ser modeladas con funciones cuadráticas, donde el vértice juega un papel fundamental.</p><p>Presta atención a la <strong>identificación de las variables</strong> (independiente y dependiente), la <strong>formulación de la función cuadrática</strong> que modela el problema y la <strong>interpretación de los resultados</strong> en el contexto dado. Recuerda que el vértice te dará el valor óptimo (máximo o mínimo) y el valor de la variable que lo produce.</p>",
+    "summaryKey": "ai-cat-1753897437014-3",
+    "problem_ids": [
+      "q-ai-cat-1753897437014-3-0",
+      "q-ai-cat-1753897437014-3-1",
+      "q-ai-cat-1753897437014-3-2",
+      "q-ai-cat-1753897437014-3-3",
+      "q-ai-cat-1753897437014-3-4",
+      "q-ai-cat-1753897437014-3-5"
+    ]
+  }
+];
+
+        const problemsById = {};
+        allProblemsData.forEach(p => { problemsById[p.id] = p; });
+        
+        let currentQuizProblems = [];
+        let currentCategory = null;
+        let completedCategories = JSON.parse(localStorage.getItem('completedQuizCategories')) || {};
+        let currentProblemIndex = 0;
+        let score = 0;
+        
+        const categorySelectionScreen = document.getElementById('category-selection-screen');
+        const categoryListEl = document.getElementById('category-list');
+        const overallProgressContainer = document.getElementById('overall-progress-container');
+        const overallScoreEl = document.getElementById('overall-score');
+        const showFinalResultsBtn = document.getElementById('show-final-results-btn');
+        const quizWrapperEl = document.getElementById('quiz-wrapper');
+        const summaryContainerEl = document.getElementById('summary-container');
+        const summaryContinueBtn = document.getElementById('summary-continue-btn');
+        const quizContainerEl = document.getElementById('quiz-container');
+        const headerEl = document.getElementById('problem-header');
+        const questionEl = document.getElementById('question-container');
+        const graphEl = document.getElementById('graph-container');
+        const optionsEl = document.getElementById('options-container');
+        const feedbackEl = document.getElementById('feedback-container');
+        const nextButton = document.getElementById('next-button');
+        const progressBar = document.getElementById('progress-bar');
+        const scoreCounterEl = document.getElementById('score-counter');
+        const finalScreenEl = document.getElementById('final-screen');
+        const backToMenuBtn = document.getElementById('back-to-menu-btn');
+
+        function renderCategoryScreen() {
+            categoryListEl.innerHTML = '';
+            let totalCompleted = 0;
+            let totalPossibleScore = 0;
+            let totalUserScore = 0;
+
+            categories.forEach(cat => {
+                const li = document.createElement('li');
+                li.className = 'category-item';
+                li.dataset.categoryId = cat.id;
+                
+                const catProgress = completedCategories[cat.id];
+                let progressHTML = '';
+                if(catProgress) {
+                    li.classList.add('completed');
+                    if (catProgress.total > 0) {
+                        progressHTML = `<div class="progress-info">Completado: ${catProgress.score}/${catProgress.total}</div>`;
+                    }
+                    totalCompleted++;
+                    totalUserScore += catProgress.score;
+                    totalPossibleScore += cat.problem_ids.length;
+                }
+
+                li.innerHTML = `<h3>${cat.title}</h3><p>${cat.description.replace(/<[^>]*>?/gm, '').substring(0, 100)}...</p>${progressHTML}`;
+                li.onclick = () => {
+                    if (!li.classList.contains('completed')) {
+                        startCategory(cat.id);
+                    }
+                };
+                categoryListEl.appendChild(li);
+            });
+
+            if (Object.keys(completedCategories).length > 0) {
+                overallProgressContainer.classList.remove('hidden');
+                overallScoreEl.textContent = `Puntaje total: ${totalUserScore} de ${totalPossibleScore} correctas. Secciones completadas: ${totalCompleted} de ${categories.length}.`;
+            } else {
+                 overallProgressContainer.classList.add('hidden');
+            }
+
+            if (totalCompleted === categories.length && categories.length > 0) {
+                showFinalResultsBtn.classList.remove('hidden');
+            } else {
+                showFinalResultsBtn.classList.add('hidden');
+            }
+
+            quizWrapperEl.classList.add('hidden');
+            categorySelectionScreen.classList.remove('hidden');
+        }
+
+        function startCategory(categoryId) {
+            currentCategory = categories.find(c => c.id === categoryId);
+            if (!currentCategory) return;
+            
+            categorySelectionScreen.classList.add('hidden');
+            quizWrapperEl.classList.remove('hidden');
+
+            currentQuizProblems = currentCategory.problem_ids.map(id => problemsById[id]);
+            currentProblemIndex = 0;
+            score = 0;
+            
+            showSummary(currentCategory.id);
+        }
+
+        function showSummary(summaryKey) {
+            const summary = summaries[summaryKey];
+            if (!summary) {
+                 summaryContinueBtn.onclick(); return;
+            }
+            
+            const summaryTitleEl = document.getElementById('summary-title');
+            const keyConceptsEl = document.getElementById('summary-key-concepts');
+            const tipsListEl = document.getElementById('summary-tips-list');
+    
+            summaryTitleEl.textContent = `Preparación para: ${summary.title}`;
+            keyConceptsEl.innerHTML = summary.key_concepts_html;
+            
+            tipsListEl.innerHTML = '';
+            summary.tips.forEach(tip => {
+                const li = document.createElement('li');
+                li.textContent = tip;
+                tipsListEl.appendChild(li);
+            });
+            
+            renderMath();
+            quizContainerEl.classList.add('hidden');
+            finalScreenEl.classList.add('hidden');
+            summaryContainerEl.classList.remove('hidden');
+        }
+
+        summaryContinueBtn.onclick = () => {
+            summaryContainerEl.classList.add('hidden');
+            if (currentQuizProblems && currentQuizProblems.length > 0) {
+                quizContainerEl.classList.remove('hidden');
+                renderProblem(currentProblemIndex);
+            } else {
+                endOfCategory();
+            }
+        };
+        
+        function renderProblem(index) {
+            optionsEl.innerHTML = '';
+            feedbackEl.style.display = 'none';
+            nextButton.classList.remove('visible');
+            graphEl.innerHTML = '';
+            optionsEl.className = '';
+
+            const problem = currentQuizProblems[index];
+            if (!problem) {
+                console.error("Could not find problem for index:", index, "in category:", currentCategory.title);
+                questionEl.innerHTML = "Error: No se pudo cargar la pregunta. Verifique que los datos sean correctos.";
+                return;
+            }
+
+            headerEl.textContent = `Pregunta ${index + 1} de ${currentQuizProblems.length}`;
+            questionEl.innerHTML = problem.text;
+            progressBar.style.width = `${((index) / currentQuizProblems.length) * 100}%`;
+            scoreCounterEl.textContent = `✅ Puntos: ${score}`;
+            
+            if (problem.diagram && problem.diagram.code) {
+                graphEl.style.display = 'block';
+                graphEl.innerHTML = problem.diagram.code;
+            } else {
+                graphEl.style.display = 'none';
+            }
+            
+            const optionsHaveDiagrams = problem.options.some(opt => opt.diagram && opt.diagram.code);
+
+            if (optionsHaveDiagrams) {
+                 optionsEl.className = 'options-grid-with-graphs';
+                 problem.options.forEach((opt, i) => createOptionBlock(opt, i));
+            } else {
+                 problem.options.forEach((opt, i) => createOptionButton(opt, i));
+            }
+            renderMath();
+        }
+        
+        function createOptionButton(option, index) {
+            const button = document.createElement('button');
+            button.className = 'option-button';
+            button.dataset.index = index;
+            button.innerHTML = `<span class="label">${String.fromCharCode(65 + index)})</span> <span class="value">${option.text || ''}</span>`;
+            button.onclick = handleOptionClick;
+            optionsEl.appendChild(button);
+        }
+        
+        function createOptionBlock(option, index) {
+            const optionBlock = document.createElement('div');
+            optionBlock.className = 'option-block-graph';
+            optionBlock.dataset.index = index;
+            optionBlock.onclick = handleOptionClick;
+            let diagramHTML = option.diagram ? `<div class="option-graph-canvas-container">${option.diagram.code}</div>` : '';
+            optionBlock.innerHTML = `<div class="label">${String.fromCharCode(65 + index)}) ${option.text || ''}</div> ${diagramHTML}`;
+            optionsEl.appendChild(optionBlock);
+        }
+
+        function handleOptionClick(event) {
+            const problem = currentQuizProblems[currentProblemIndex];
+            const selectedIndex = parseInt(event.currentTarget.dataset.index, 10);
+            const correctIndex = problem.correct;
+            
+            const correctButton = document.querySelector(`[data-index="${correctIndex}"]`);
+            if (correctButton) correctButton.classList.add('correct');
+            
+            let isAnswerCorrect = false;
+            const selectedButton = event.currentTarget;
+            if (selectedIndex === correctIndex) {
+                score++;
+                isAnswerCorrect = true;
+            } else {
+                selectedButton.classList.add('incorrect');
+            }
+            
+            scoreCounterEl.textContent = `✅ Puntos: ${score}`;
+            document.querySelectorAll('.option-button, .option-block-graph').forEach(btn => { btn.classList.add('disabled'); btn.onclick = null; });
+            progressBar.style.width = `${((currentProblemIndex + 1) / currentQuizProblems.length) * 100}%`;
+            
+            feedbackEl.className = isAnswerCorrect ? 'feedback-container correct' : 'feedback-container incorrect';
+            const feedbackTitle = isAnswerCorrect ? `<div id="feedback-title">${icons.check} Correcto</div>` : `<div id="feedback-title">${icons.x} Incorrecto</div>`;
+            feedbackEl.innerHTML = `${feedbackTitle}${problem.explanation}`;
+            
+            renderMath();
+            feedbackEl.style.display = 'block';
+            if (currentProblemIndex < currentQuizProblems.length - 1) { nextButton.textContent = 'Siguiente →'; } 
+            else { nextButton.textContent = 'Finalizar Sección'; }
+            nextButton.classList.add('visible');
+        }
+
+        nextButton.onclick = () => {
+            currentProblemIndex++;
+            if (currentProblemIndex < currentQuizProblems.length) {
+                renderProblem(currentProblemIndex);
+            } else {
+                endOfCategory();
+            }
+        };
+        
+        function endOfCategory() {
+            completedCategories[currentCategory.id] = {
+                score: score,
+                total: currentQuizProblems.length
+            };
+            localStorage.setItem('completedQuizCategories', JSON.stringify(completedCategories));
+            
+            quizContainerEl.classList.add('hidden');
+            finalScreenEl.classList.remove('hidden');
+
+            const percentage = currentQuizProblems.length > 0 ? Math.round((score / currentQuizProblems.length) * 100) : 100;
+            document.getElementById('final-title').textContent = `Sección Completada: ${currentCategory.title}`;
+            document.getElementById('final-message').textContent = currentQuizProblems.length > 0 ? `¡Gran trabajo! Has completado esta sección.` : `¡Concepto explorado! Ahora puedes continuar con la siguiente sección.`;
+            document.getElementById('final-score').textContent = currentQuizProblems.length > 0 ? `${score} / ${currentQuizProblems.length}` : '✔';
+            const finalPercentageEl = document.getElementById('final-percentage');
+            if (currentQuizProblems.length > 0) {
+                finalPercentageEl.textContent = `(${percentage}%)`;
+                finalPercentageEl.style.color = percentage >= 60 ? 'var(--success-color)' : 'var(--danger-color)';
+            } else {
+                finalPercentageEl.textContent = '';
+            }
+            backToMenuBtn.textContent = 'Volver al Menú';
+            backToMenuBtn.onclick = () => {
+                finalScreenEl.classList.add('hidden');
+                renderCategoryScreen();
+            };
+        }
+        
+        showFinalResultsBtn.onclick = () => {
+            categorySelectionScreen.classList.add('hidden');
+            quizWrapperEl.classList.remove('hidden');
+
+            summaryContainerEl.classList.add('hidden');
+            quizContainerEl.classList.add('hidden');
+            finalScreenEl.classList.remove('hidden');
+
+            let totalScore = 0;
+            let totalProblems = 0;
+            Object.values(completedCategories).forEach(cat => {
+                totalScore += cat.score;
+                if (cat.total > 0) {
+                    totalProblems += cat.total;
+                }
+            });
+
+            const percentage = totalProblems > 0 ? Math.round((totalScore / totalProblems) * 100) : 0;
+            document.getElementById('final-title').textContent = '¡Resumen Final del Desafío!';
+            document.getElementById('final-message').textContent = '¡Felicidades! Has completado todos los temas. Este es tu rendimiento general.';
+            document.getElementById('final-score').textContent = `${totalScore} / ${totalProblems}`;
+            const finalPercentageEl = document.getElementById('final-percentage');
+            finalPercentageEl.textContent = `(${percentage}%)`;
+            finalPercentageEl.style.color = percentage >= 60 ? 'var(--success-color)' : 'var(--danger-color)';
+            
+            backToMenuBtn.textContent = 'Reiniciar Desafío';
+            backToMenuBtn.onclick = () => {
+                localStorage.removeItem('completedQuizCategories');
+                window.location.reload();
+            };
+        };
+        
+        renderCategoryScreen();
+        renderMath();
+    });
+    </script>
+</body>
+</html>
+  
